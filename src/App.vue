@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import Terminal from './components/Terminal.vue'
+import Terminal from "./components/Terminal.vue";
 </script>
 
 <template>
