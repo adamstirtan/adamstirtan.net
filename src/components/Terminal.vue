@@ -396,8 +396,8 @@ onUnmounted(() => {
   inset: 0;
   background: radial-gradient(
     ellipse at center,
-    transparent 40%,
-    rgba(0, 0, 0, 0.95) 100%
+    transparent 60%,
+    rgba(0, 0, 0, 0.8) 100%
   );
   pointer-events: none;
   z-index: 51;
@@ -448,17 +448,14 @@ onUnmounted(() => {
 
 /* ── Links ───────────────────────────────────────────────────────────────── */
 .line--link a {
-  color: #00d4ff;
-  text-decoration: none;
-  text-shadow: 0 0 8px rgba(0, 212, 255, 0.6);
-  transition:
-    color 0.15s,
-    text-shadow 0.15s;
+  color: cornflowerblue;
+  text-shadow: none;
+  transition: color 0.15s;
+  text-decoration: underline transparent;
 }
 
 .line--link a:hover {
-  color: #ffffff;
-  text-shadow: 0 0 14px rgba(255, 255, 255, 0.8);
+  text-decoration: underline;
 }
 
 /* ── Cursor ──────────────────────────────────────────────────────────────── */
