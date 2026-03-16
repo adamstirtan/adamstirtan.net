@@ -351,9 +351,6 @@ onUnmounted(() => {
       </div>
     </div>
 
-    <!-- Skip hint -->
-    <div v-if="!isDone" class="skip-hint">press any key or click to skip</div>
-
     <!-- Glitch: bright scan line sweeps the screen -->
     <div v-if="glitchHeavy" class="glitch-scanline" aria-hidden="true" />
   </div>
@@ -370,11 +367,13 @@ onUnmounted(() => {
   font-size: clamp(17px, 2vw, 22px);
   line-height: 1.65;
   padding: clamp(1.5rem, 4vw, 3rem) clamp(1.5rem, 6vw, 5rem);
+  padding-bottom: clamp(4rem, 10vw, 7rem);
   cursor: pointer;
   /* phosphor glow */
   text-shadow: 0 0 6px rgba(51, 255, 51, 0.55);
   /* subtle CRT flicker */
-  animation: flicker 10s infinite;
+  animation: flicker 6s infinite;
+  filter: contrast(1.25) saturate(1.2);
 }
 
 /* ── Overlays ─────────────────────────────────────────────────────────────── */
@@ -383,10 +382,10 @@ onUnmounted(() => {
   inset: 0;
   background: repeating-linear-gradient(
     0deg,
-    rgba(0, 0, 0, 0.12),
-    rgba(0, 0, 0, 0.12) 1px,
+    rgba(0, 0, 0, 0.55),
+    rgba(0, 0, 0, 0.55) 1px,
     transparent 1px,
-    transparent 3px
+    transparent 2px
   );
   pointer-events: none;
   z-index: 50;
@@ -397,8 +396,8 @@ onUnmounted(() => {
   inset: 0;
   background: radial-gradient(
     ellipse at center,
-    transparent 55%,
-    rgba(0, 0, 0, 0.75) 100%
+    transparent 40%,
+    rgba(0, 0, 0, 0.95) 100%
   );
   pointer-events: none;
   z-index: 51;
@@ -409,6 +408,10 @@ onUnmounted(() => {
   position: relative;
   z-index: 1;
   max-width: 820px;
+  transform: perspective(1000px) rotateX(2deg) scale(1.02);
+  transform-origin: center top;
+  transform-style: preserve-3d;
+  backface-visibility: hidden;
 }
 
 /* ── Lines ───────────────────────────────────────────────────────────────── */
@@ -494,17 +497,20 @@ onUnmounted(() => {
 
 @keyframes flicker {
   0%,
-  89%,
-  91%,
-  93%,
+  88%,
+  90%,
+  92%,
   100% {
     opacity: 1;
   }
-  90% {
-    opacity: 0.96;
+  89% {
+    opacity: 0.8;
   }
-  92% {
-    opacity: 0.89;
+  91% {
+    opacity: 0.6;
+  }
+  93% {
+    opacity: 0.85;
   }
 }
 
