@@ -363,7 +363,7 @@ onUnmounted(() => {
   min-height: 100vh;
   background: #0d0d0d;
   color: #33ff33;
-  font-family: "VT323", "Share Tech Mono", "Courier New", monospace;
+  font-family: "Press Start 2P", "VT323", "Share Tech Mono", monospace;
   font-size: clamp(17px, 2vw, 22px);
   line-height: 1.65;
   padding: clamp(1.5rem, 4vw, 3rem) clamp(1.5rem, 6vw, 5rem);
