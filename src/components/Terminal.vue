@@ -341,20 +341,20 @@ onUnmounted(() => {
             >{{ line.text }}</a
           >
         </template>
-        <template v-else>{{ line.text }}</template>
+        <template v-else>{{ displayText(line.text) }}</template>
       </div>
 
       <!-- Currently-typing line -->
       <div v-if="isTyping" class="line" :class="`line--${currentType}`">
         <span v-if="currentType === 'command'" class="prompt"
           >{{ PROMPT }}&nbsp;</span
-        >{{ currentText }}<span class="cursor" aria-hidden="true">█</span>
+        >{{ displayText(currentText) }}<span class="cursor" aria-hidden="true">█</span>
       </div>
 
       <!-- Done: idle prompt with blinking cursor -->
       <div v-if="isDone" class="line line--command">
         <span class="prompt">{{ PROMPT }}&nbsp;</span
-        ><span class="cursor cursor--blink" aria-hidden="true">█</span>
+        ><span v-if="!glitchActive" class="cursor cursor--blink" aria-hidden="true">█</span><span v-else class="cursor cursor--blink" aria-hidden="true">█</span>
       </div>
     </div>
 
