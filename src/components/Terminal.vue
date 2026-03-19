@@ -218,6 +218,35 @@ function clearAll() {
   timeoutIds = [];
 }
 
+// Text corruption helpers used during glitch mode
+const corruptionChars = "█▓▒░▌▐▖▗▝▘▚◥◤◣◢☒☢☣✖✕✚✦✧✪✫✬".split("");
+function corruptChar(ch: string, heavy = false) {
+  if (ch === ' ' || ch === '\n') return ch;
+  const r = Math.random();
+  const baseProb = heavy ? 0.35 : 0.12;
+  if (r < baseProb) {
+    // replace with a corruption glyph or random ASCII
+    if (Math.random() < 0.5) return corruptionChars[Math.floor(Math.random() * corruptionChars.length)];
+    // random ASCII-like glitch
+    const code = 33 + Math.floor(Math.random() * 94);
+    return String.fromCharCode(code);
+  }
+  // small jitter swapping characters
+  if (Math.random() < (heavy ? 0.08 : 0.02)) {
+    return String.fromCharCode(33 + Math.floor(Math.random() * 94));
+  }
+  return ch;
+}
+
+function displayText(input: string) {
+  // If no glitch, return input unchanged
+  if (!glitchActive.value) return input;
+  const heavy = glitchHeavy.value;
+  // Apply corruption across the string but keep length similar
+  const out = input.split("").map((c) => corruptChar(c, heavy)).join("");
+  return out;
+}
+
 function processLine(index: number) {
   if (skipped.value) return;
   if (index >= lineConfigs.length) {
