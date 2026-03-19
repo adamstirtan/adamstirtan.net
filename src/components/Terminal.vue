@@ -97,7 +97,6 @@ const currentType = ref<LineType>("output");
 const currentHref = ref<string | undefined>();
 const isTyping = ref(false);
 const isDone = ref(false);
-const skipped = ref(false);
 
 const idleCommands = [
   "ping 127.0.0.1 -c 9999",
@@ -181,7 +180,6 @@ function runIdleCycle() {
   let charIdx = 0;
 
   function typeChar() {
-    if (skipped.value) return;
     if (charIdx < command.length) {
       currentText.value = command.slice(0, ++charIdx);
       later(typeChar, typeSpeed + Math.random() * 40 - 20);
@@ -192,7 +190,6 @@ function runIdleCycle() {
   }
 
   function deleteChar() {
-    if (skipped.value) return;
     if (currentText.value.length > 0) {
       currentText.value = currentText.value.slice(0, -1);
       later(deleteChar, typeSpeed * 0.65 + Math.random() * 30);
@@ -248,7 +245,6 @@ function displayText(input: string) {
 }
 
 function processLine(index: number) {
-  if (skipped.value) return;
   if (index >= lineConfigs.length) {
     isTyping.value = false;
     isDone.value = true;
@@ -259,8 +255,6 @@ function processLine(index: number) {
   const config = lineConfigs[index];
 
   later(() => {
-    if (skipped.value) return;
-
     if (config.type === "blank") {
       completedLines.value.push({ type: "blank", text: "" });
       processLine(index + 1);
@@ -276,7 +270,6 @@ function processLine(index: number) {
     let charIdx = 0;
 
     function typeChar() {
-      if (skipped.value) return;
       if (charIdx < config.text.length) {
         currentText.value = config.text.slice(0, ++charIdx);
         const jitter = base * 0.35;
@@ -297,22 +290,6 @@ function processLine(index: number) {
   }, config.preDelay ?? 100);
 }
 
-function skipToEnd() {
-  if (isDone.value) return;
-  skipped.value = true;
-  clearAll();
-  completedLines.value = lineConfigs.map((c) => ({
-    type: c.type,
-    text: c.text,
-    href: c.href,
-  }));
-  currentText.value = "";
-  isTyping.value = false;
-  isDone.value = true;
-  skipped.value = false; // allow idle typing to continue
-  scheduleIdleCycle();
-}
-
 watch(
   [completedLines, isTyping],
   async () => {
@@ -326,9 +303,6 @@ function onClick(ev?: MouseEvent) {
   // Prevent click from causing accidental skips or propagating to other handlers
   ev?.stopPropagation();
   ev?.preventDefault();
-
-  // Ensure we don't alter typing state — clicking should not skip or clear typing
-  skipped.value = false;
 
   // Trigger a big heavy glitch on tap/click without touching typing timers
   if (glitchTimer) clearTimeout(glitchTimer);
@@ -345,24 +319,15 @@ function onClick(ev?: MouseEvent) {
   }, duration);
 }
 
-// Only allow skip-to-end via a deliberate keyboard shortcut (Ctrl+K)
-function keyHandler(e: KeyboardEvent) {
-  if (e.key.toLowerCase() === 'k' && (e.ctrlKey || e.metaKey)) {
-    skipToEnd();
-  }
-}
-
 onMounted(() => {
   processLine(0);
   scheduleGlitch();
-  window.addEventListener("keydown", keyHandler);
 });
 
 onUnmounted(() => {
   clearAll();
   stopIdleLoop();
   if (glitchTimer) clearTimeout(glitchTimer);
-  window.removeEventListener("keydown", keyHandler);
 });
 </script>
 
@@ -532,19 +497,6 @@ onUnmounted(() => {
 
 .cursor--blink {
   animation: blink 1.1s step-end infinite;
-}
-
-/* ── Skip hint ───────────────────────────────────────────────────────────── */
-.skip-hint {
-  position: fixed;
-  bottom: 1.5rem;
-  right: 2rem;
-  font-size: 0.75em;
-  color: rgba(51, 255, 51, 0.35);
-  text-shadow: none;
-  pointer-events: none;
-  z-index: 60;
-  letter-spacing: 0.05em;
 }
 
 /* ── Animations ──────────────────────────────────────────────────────────── */
