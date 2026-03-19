@@ -114,6 +114,13 @@ const idleCommands = [
   "find / -type f -name 'passwords.txt' 2> /dev/null",
   "openssl s_client -connect secret-door.ilovebees.com:443",
   "export PATH=$PATH:/secret/hacker/tools && hacktheplanet --stealth",
+  // Git-flavored idle commands
+  "git commit -am 'fix: obvious typo' || echo 'nothing to commit'",
+  "git pull --rebase origin main",
+  "git checkout -b feature/terminal-easter-egg",
+  "git push origin HEAD --force-with-lease",
+  "git bisect start && git bisect bad HEAD && git bisect good v1.0.0",
+  "git log --oneline --graph --decorate --all | head -n 10",
 ];
 
 let idleTimer: ReturnType<typeof setTimeout> | null = null;
