@@ -322,6 +322,22 @@ watch(
   { deep: true },
 );
 
+function onClick(ev?: MouseEvent) {
+  // Trigger a big heavy glitch on tap/click
+  if (glitchTimer) clearTimeout(glitchTimer);
+  glitchActive.value = true;
+  glitchHeavy.value = true;
+  glitchBarY.value = `${8 + Math.random() * 78}%`;
+
+  // Longer dramatic duration
+  const duration = 800 + Math.random() * 1200; // 0.8s - 2.0s
+  glitchTimer = setTimeout(() => {
+    glitchActive.value = false;
+    glitchHeavy.value = false;
+    scheduleGlitch();
+  }, duration);
+}
+
 onMounted(() => {
   processLine(0);
   scheduleGlitch();
@@ -347,7 +363,7 @@ onUnmounted(() => {
     class="terminal"
     :class="{ glitch: glitchActive, 'glitch--heavy': glitchHeavy }"
     :style="{ '--glitch-bar-y': glitchBarY }"
-    @click="skipToEnd"
+    @click="onClick"
   >
     <div class="terminal-content">
       <!-- Completed lines -->
