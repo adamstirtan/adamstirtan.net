@@ -338,17 +338,24 @@ function onClick(ev?: MouseEvent) {
   }, duration);
 }
 
+// Only allow skip-to-end via a deliberate keyboard shortcut (Ctrl+K)
+function keyHandler(e: KeyboardEvent) {
+  if (e.key.toLowerCase() === 'k' && (e.ctrlKey || e.metaKey)) {
+    skipToEnd();
+  }
+}
+
 onMounted(() => {
   processLine(0);
   scheduleGlitch();
-  window.addEventListener("keydown", skipToEnd);
+  window.addEventListener("keydown", keyHandler);
 });
 
 onUnmounted(() => {
   clearAll();
   stopIdleLoop();
   if (glitchTimer) clearTimeout(glitchTimer);
-  window.removeEventListener("keydown", skipToEnd);
+  window.removeEventListener("keydown", keyHandler);
 });
 </script>
 
