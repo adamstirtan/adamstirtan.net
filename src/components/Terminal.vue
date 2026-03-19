@@ -323,7 +323,14 @@ watch(
 );
 
 function onClick(ev?: MouseEvent) {
-  // Trigger a big heavy glitch on tap/click
+  // Prevent click from causing accidental skips or propagating to other handlers
+  ev?.stopPropagation();
+  ev?.preventDefault();
+
+  // Ensure we don't alter typing state — clicking should not skip or clear typing
+  skipped.value = false;
+
+  // Trigger a big heavy glitch on tap/click without touching typing timers
   if (glitchTimer) clearTimeout(glitchTimer);
   glitchActive.value = true;
   glitchHeavy.value = true;
