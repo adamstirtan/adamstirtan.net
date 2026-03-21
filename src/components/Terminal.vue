@@ -57,6 +57,13 @@ const lineConfigs: LineConfig[] = [
     preDelay: 60,
     speed: 22,
   },
+  {
+    type: "link",
+    text: "speaking  ->  my tech talks & slides",
+    href: "/speaking.html",
+    preDelay: 60,
+    speed: 22,
+  },
   { type: "blank", text: "", preDelay: 500 },
   { type: "command", text: "cat contact.txt", preDelay: 900, speed: 80 },
   { type: "blank", text: "", preDelay: 150 },
