@@ -139,15 +139,17 @@ function doGlitch() {
   glitchHeavy.value = heavy;
   glitchActive.value = true;
 
-  const duration = heavy ? 160 + Math.random() * 260 : 70 + Math.random() * 110;
+  const duration = heavy
+    ? 400 + Math.random() * 600
+    : 150 + Math.random() * 250;
 
   glitchTimer = setTimeout(() => {
     glitchActive.value = false;
     glitchHeavy.value = false;
 
-    // 35 % chance of a quick aftershock
-    if (Math.random() < 0.35) {
-      glitchTimer = setTimeout(doGlitch, 55 + Math.random() * 170);
+    // 60 % chance of a quick aftershock
+    if (Math.random() < 0.6) {
+      glitchTimer = setTimeout(doGlitch, 40 + Math.random() * 120);
     } else {
       scheduleGlitch();
     }
@@ -155,7 +157,7 @@ function doGlitch() {
 }
 
 function scheduleGlitch() {
-  glitchTimer = setTimeout(doGlitch, 3500 + Math.random() * 8500);
+  glitchTimer = setTimeout(doGlitch, 1500 + Math.random() * 4000);
 }
 
 function stopIdleLoop() {
@@ -221,12 +223,15 @@ function clearAll() {
 // Text corruption helpers used during glitch mode
 const corruptionChars = "█▓▒░▌▐▖▗▝▘▚◥◤◣◢☒☢☣✖✕✚✦✧✪✫✬".split("");
 function corruptChar(ch: string, heavy = false) {
-  if (ch === ' ' || ch === '\n') return ch;
+  if (ch === " " || ch === "\n") return ch;
   const r = Math.random();
   const baseProb = heavy ? 0.35 : 0.12;
   if (r < baseProb) {
     // replace with a corruption glyph or random ASCII
-    if (Math.random() < 0.5) return corruptionChars[Math.floor(Math.random() * corruptionChars.length)];
+    if (Math.random() < 0.5)
+      return corruptionChars[
+        Math.floor(Math.random() * corruptionChars.length)
+      ];
     // random ASCII-like glitch
     const code = 33 + Math.floor(Math.random() * 94);
     return String.fromCharCode(code);
@@ -243,7 +248,10 @@ function displayText(input: string) {
   if (!glitchActive.value) return input;
   const heavy = glitchHeavy.value;
   // Apply corruption across the string but keep length similar
-  const out = input.split("").map((c) => corruptChar(c, heavy)).join("");
+  const out = input
+    .split("")
+    .map((c) => corruptChar(c, heavy))
+    .join("");
   return out;
 }
 
@@ -302,40 +310,6 @@ watch(
   { deep: true },
 );
 
-function doShock() {
-  // Reset the scheduled random-glitch timer so it starts fresh after the shock.
-  if (glitchTimer) {
-    clearTimeout(glitchTimer);
-    glitchTimer = null;
-  }
-
-  // Brief, intense shake + chromatic aberration (reuses glitch classes).
-  glitchBarY.value = `${8 + Math.random() * 78}%`;
-  glitchActive.value = true;
-  glitchHeavy.value = true;
-
-  // Show the electric flash overlay.
-  shockActive.value = true;
-  setTimeout(() => {
-    shockActive.value = false;
-  }, 180);
-
-  // Shock lasts 300–550 ms — shorter and punchier than a random glitch.
-  const duration = 300 + Math.random() * 250;
-  glitchTimer = setTimeout(() => {
-    glitchActive.value = false;
-    glitchHeavy.value = false;
-    // Schedule the NEXT random shock from this moment.
-    scheduleGlitch();
-  }, duration);
-}
-
-function onClick(ev?: MouseEvent) {
-  ev?.stopPropagation();
-  ev?.preventDefault();
-  doShock();
-}
-
 onMounted(() => {
   processLine(0);
   scheduleGlitch();
@@ -359,7 +333,6 @@ onUnmounted(() => {
     class="terminal"
     :class="{ glitch: glitchActive, 'glitch--heavy': glitchHeavy }"
     :style="{ '--glitch-bar-y': glitchBarY }"
-    @click="onClick"
   >
     <div class="terminal-content">
       <!-- Completed lines -->
@@ -389,22 +362,24 @@ onUnmounted(() => {
       <div v-if="isTyping" class="line" :class="`line--${currentType}`">
         <span v-if="currentType === 'command'" class="prompt"
           >{{ PROMPT }}&nbsp;</span
-        >{{ displayText(currentText) }}<span class="cursor" aria-hidden="true">█</span>
+        >{{ displayText(currentText)
+        }}<span class="cursor" aria-hidden="true">█</span>
       </div>
 
       <!-- Done: idle prompt with blinking cursor -->
       <div v-if="isDone" class="line line--command">
         <span class="prompt">{{ PROMPT }}&nbsp;</span
-        ><span v-if="!glitchActive" class="cursor cursor--blink" aria-hidden="true">█</span><span v-else class="cursor cursor--blink" aria-hidden="true">█</span>
+        ><span class="cursor cursor--blink" aria-hidden="true">█</span>
       </div>
     </div>
-
-    <!-- Glitch: bright scan line sweeps the screen -->
-    <div v-if="glitchHeavy" class="glitch-scanline" aria-hidden="true" />
-
-    <!-- Shock: electric flash overlay on click/tap -->
-    <div v-if="shockActive" class="shock-flash" aria-hidden="true" />
   </div>
+
+  <!-- Glitch: bright scan line sweeps the screen — must be outside .terminal
+       so position:fixed is relative to the viewport, not the filtered parent -->
+  <div v-if="glitchHeavy" class="glitch-scanline" aria-hidden="true" />
+
+  <!-- Shock: electric flash overlay on click/tap — same reason -->
+  <div v-if="shockActive" class="shock-flash" aria-hidden="true" />
 </template>
 
 <style scoped>
@@ -419,7 +394,7 @@ onUnmounted(() => {
   line-height: 1.65;
   padding: clamp(1.5rem, 4vw, 3rem) clamp(1.5rem, 6vw, 5rem);
   padding-bottom: clamp(4rem, 10vw, 7rem);
-  cursor: pointer;
+  cursor: default;
   /* phosphor glow */
   text-shadow: 0 0 6px rgba(51, 255, 51, 0.55);
   /* subtle CRT flicker */
@@ -560,14 +535,14 @@ onUnmounted(() => {
 .terminal.glitch--heavy {
   animation:
     flicker 10s infinite,
-    glitch-shake 0.12s steps(3) infinite;
+    shock-shake 0.08s steps(4) infinite;
 }
 
 .terminal.glitch--heavy .terminal-content {
-  animation: glitch-skew 0.08s steps(2) infinite;
+  animation: glitch-skew 0.06s steps(3) infinite;
   text-shadow:
-    -5px 0 rgba(255, 0, 55, 0.9),
-    5px 0 rgba(0, 55, 255, 0.9),
+    -8px 0 rgba(255, 0, 55, 1),
+    8px 0 rgba(0, 80, 255, 1),
     0 0 6px rgba(51, 255, 51, 0.55);
 }
 
@@ -629,6 +604,34 @@ onUnmounted(() => {
   }
 }
 
+@keyframes shock-shake {
+  0%,
+  100% {
+    transform: translate(0, 0) rotate(0deg);
+  }
+  10% {
+    transform: translate(-14px, 3px) rotate(-0.5deg);
+  }
+  22% {
+    transform: translate(14px, -5px) rotate(0.4deg);
+  }
+  35% {
+    transform: translate(-10px, 6px) rotate(-0.3deg);
+  }
+  48% {
+    transform: translate(12px, -4px) rotate(0.6deg);
+  }
+  60% {
+    transform: translate(-8px, 5px) rotate(-0.2deg);
+  }
+  72% {
+    transform: translate(10px, -3px) rotate(0.3deg);
+  }
+  85% {
+    transform: translate(-6px, 4px) rotate(-0.4deg);
+  }
+}
+
 @keyframes glitch-skew {
   0% {
     transform: skewX(0deg) translateX(0);
@@ -664,21 +667,35 @@ onUnmounted(() => {
 .shock-flash {
   position: fixed;
   inset: 0;
-  background: rgba(51, 255, 51, 0.45);
   pointer-events: none;
   z-index: 300;
-  animation: shock-flash 0.18s ease-out forwards;
+  animation: shock-flash 0.55s ease-out forwards;
 }
 
 @keyframes shock-flash {
   0% {
     opacity: 1;
+    background: rgba(240, 255, 200, 0.95);
   }
-  40% {
-    opacity: 0.7;
+  16% {
+    opacity: 0.15;
+    background: rgba(51, 255, 51, 0.3);
+  }
+  30% {
+    opacity: 0.88;
+    background: rgba(200, 255, 160, 0.85);
+  }
+  50% {
+    opacity: 0.1;
+    background: rgba(51, 255, 51, 0.2);
+  }
+  65% {
+    opacity: 0.55;
+    background: rgba(51, 255, 51, 0.45);
   }
   100% {
     opacity: 0;
+    background: rgba(51, 255, 51, 0);
   }
 }
 
