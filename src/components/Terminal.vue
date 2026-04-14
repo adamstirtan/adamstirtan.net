@@ -130,6 +130,9 @@ const glitchHeavy = ref(false);
 const glitchBarY = ref("40%");
 let glitchTimer: ReturnType<typeof setTimeout> | null = null;
 
+// ── Shock state ──────────────────────────────────────────────────────────────
+const shockActive = ref(false);
+
 function doGlitch() {
   const heavy = Math.random() < 0.45;
   glitchBarY.value = `${8 + Math.random() * 78}%`;
@@ -299,24 +302,38 @@ watch(
   { deep: true },
 );
 
-function onClick(ev?: MouseEvent) {
-  // Prevent click from causing accidental skips or propagating to other handlers
-  ev?.stopPropagation();
-  ev?.preventDefault();
+function doShock() {
+  // Reset the scheduled random-glitch timer so it starts fresh after the shock.
+  if (glitchTimer) {
+    clearTimeout(glitchTimer);
+    glitchTimer = null;
+  }
 
-  // Trigger a big heavy glitch on tap/click without touching typing timers
-  if (glitchTimer) clearTimeout(glitchTimer);
+  // Brief, intense shake + chromatic aberration (reuses glitch classes).
+  glitchBarY.value = `${8 + Math.random() * 78}%`;
   glitchActive.value = true;
   glitchHeavy.value = true;
-  glitchBarY.value = `${8 + Math.random() * 78}%`;
 
-  // Longer dramatic duration
-  const duration = 800 + Math.random() * 1200; // 0.8s - 2.0s
+  // Show the electric flash overlay.
+  shockActive.value = true;
+  setTimeout(() => {
+    shockActive.value = false;
+  }, 180);
+
+  // Shock lasts 300–550 ms — shorter and punchier than a random glitch.
+  const duration = 300 + Math.random() * 250;
   glitchTimer = setTimeout(() => {
     glitchActive.value = false;
     glitchHeavy.value = false;
+    // Schedule the NEXT random shock from this moment.
     scheduleGlitch();
   }, duration);
+}
+
+function onClick(ev?: MouseEvent) {
+  ev?.stopPropagation();
+  ev?.preventDefault();
+  doShock();
 }
 
 onMounted(() => {
@@ -384,6 +401,9 @@ onUnmounted(() => {
 
     <!-- Glitch: bright scan line sweeps the screen -->
     <div v-if="glitchHeavy" class="glitch-scanline" aria-hidden="true" />
+
+    <!-- Shock: electric flash overlay on click/tap -->
+    <div v-if="shockActive" class="shock-flash" aria-hidden="true" />
   </div>
 </template>
 
@@ -635,6 +655,30 @@ onUnmounted(() => {
   to {
     top: 101%;
     opacity: 0.2;
+  }
+}
+
+/* ── Shock ───────────────────────────────────────────────────────────────── */
+
+/* Electric flash overlay that appears on click/tap */
+.shock-flash {
+  position: fixed;
+  inset: 0;
+  background: rgba(51, 255, 51, 0.45);
+  pointer-events: none;
+  z-index: 300;
+  animation: shock-flash 0.18s ease-out forwards;
+}
+
+@keyframes shock-flash {
+  0% {
+    opacity: 1;
+  }
+  40% {
+    opacity: 0.7;
+  }
+  100% {
+    opacity: 0;
   }
 }
 
