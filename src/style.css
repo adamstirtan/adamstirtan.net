@@ -1,25 +1,542 @@
-@import 'nes.css/css/nes.min.css';
+@import url("https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,700&family=Fraunces:opsz,wght@9..144,500;9..144,600&display=swap");
 
-*,
-*::before,
-*::after {
+:root {
+  color: #f5eddf;
+  background: #111211;
+  font-family: "DM Sans", sans-serif;
+}
+* {
   box-sizing: border-box;
   margin: 0;
-  padding: 0;
 }
-
-html,
-body {
-  width: 100%;
-  min-height: 100%;
+html {
+  min-width: 320px;
+  background: #111211;
 }
-
-body {
-  background: #0d0d0d;
-  overflow-x: hidden;
-}
-
+body,
 #app {
-  width: 100%;
+  min-width: 320px;
   min-height: 100vh;
+}
+button,
+a {
+  color: inherit;
+  font: inherit;
+}
+button {
+  cursor: pointer;
+  border: 0;
+  background: none;
+}
+a {
+  text-decoration: none;
+}
+
+.site-shell {
+  min-height: 100vh;
+  overflow: hidden;
+  background: #111211;
+  position: relative;
+}
+.site-shell::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  opacity: 0.23;
+  pointer-events: none;
+  background-image:
+    linear-gradient(rgba(245, 237, 223, 0.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(245, 237, 223, 0.025) 1px, transparent 1px);
+  background-size: 4px 4px;
+}
+.site-header {
+  position: relative;
+  z-index: 4;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  padding: 2.15rem 3.3rem;
+}
+.wordmark {
+  color: #f7eee0;
+  text-align: left;
+  font-weight: 700;
+  font-size: 0.88rem;
+  letter-spacing: 0.04em;
+  line-height: 0.86;
+}
+.menu-button {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  text-transform: uppercase;
+  font-family: "DM Mono", monospace;
+  font-size: 0.7rem;
+  letter-spacing: 0.06em;
+}
+.menu-button i,
+.menu-button i::after {
+  display: block;
+  width: 1.65rem;
+  height: 1px;
+  background: currentColor;
+  content: "";
+  transition: transform 0.25s ease;
+}
+.menu-button i::after {
+  transform: translateY(0.38rem);
+}
+.is-menu-open .menu-button i {
+  transform: rotate(45deg);
+}
+.is-menu-open .menu-button i::after {
+  transform: rotate(-90deg);
+}
+.menu {
+  position: fixed;
+  z-index: 3;
+  inset: 0;
+  padding: 10rem 9vw 3rem;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s ease;
+  background: #9a6bc2;
+  color: #17120e;
+  display: grid;
+  align-content: center;
+  gap: 0.55rem;
+}
+.is-menu-open .menu {
+  opacity: 1;
+  pointer-events: auto;
+}
+.menu button {
+  text-align: left;
+  font-family: Fraunces, serif;
+  font-size: clamp(2.4rem, 6vw, 5.5rem);
+  line-height: 1;
+  transition: padding 0.15s ease;
+}
+.menu button:hover,
+.menu button.active {
+  padding-left: 1rem;
+}
+.menu button span {
+  display: inline-block;
+  width: 3rem;
+  font:
+    0.65rem "DM Mono",
+    monospace;
+  vertical-align: middle;
+}
+.menu p {
+  margin-top: 3.5rem;
+  font:
+    0.7rem/1.5 "DM Mono",
+    monospace;
+  text-transform: uppercase;
+}
+main {
+  position: relative;
+  z-index: 1;
+}
+.home-view {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  min-height: calc(100vh - 5.5rem);
+  padding: clamp(4rem, 14vh, 9.5rem) 6vw 1.5rem;
+  display: grid;
+  grid-template-rows: 1fr auto;
+}
+.home-atmosphere {
+  position: absolute;
+  z-index: -1;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+.eyebrow {
+  font:
+    0.68rem/1.2 "DM Mono",
+    monospace;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #d4c9b9;
+}
+.home-identity h1,
+.inner-view h1 {
+  margin-top: 0.75rem;
+  font:
+    600 clamp(4.7rem, 13vw, 12.5rem)/0.76 Fraunces,
+    serif;
+  letter-spacing: -0.055em;
+}
+.roles {
+  margin-top: 1.4rem;
+  font:
+    500 clamp(1.2rem, 2.2vw, 1.9rem)/1.15 "DM Sans",
+    sans-serif;
+  letter-spacing: -0.02em;
+}
+.home-intro {
+  align-self: end;
+  max-width: 30rem;
+  margin: 6rem 0 4rem;
+}
+.intro-copy {
+  margin: 1.05rem 0 1.4rem;
+  font-size: clamp(1.25rem, 2.2vw, 1.9rem);
+  line-height: 1.22;
+  letter-spacing: -0.025em;
+}
+.text-link,
+.home-footer a {
+  border-bottom: 1px solid currentColor;
+  padding-bottom: 0.2rem;
+  font:
+    0.7rem "DM Mono",
+    monospace;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.home-footer {
+  display: flex;
+  justify-content: space-between;
+  font:
+    0.65rem "DM Mono",
+    monospace;
+  color: #d4c9b9;
+  text-transform: uppercase;
+}
+.home-footer a {
+  color: #f5eddf;
+}
+.inner-view {
+  min-height: calc(100vh - 5.5rem);
+  padding: clamp(3.5rem, 9vh, 7rem) 8vw 6rem;
+}
+.inner-view h1 {
+  max-width: 60rem;
+  font-size: clamp(3.7rem, 8.7vw, 8rem);
+  line-height: 0.88;
+}
+.blog-search {
+  display: block;
+  max-width: 70rem;
+  margin-top: 4rem;
+  border-bottom: 1px solid rgba(245, 237, 223, 0.5);
+}
+.blog-search span {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+.blog-search input {
+  width: 100%;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  padding: 0 0 0.8rem;
+  color: #f5eddf;
+  font:
+    500 clamp(1.2rem, 2.2vw, 1.85rem)/1.1 Fraunces,
+    serif;
+}
+.blog-search input::placeholder {
+  color: #d4c9b9;
+  opacity: 1;
+}
+.search-result,
+.search-empty {
+  max-width: 70rem;
+  font:
+    0.68rem "DM Mono",
+    monospace;
+  color: #d4c9b9;
+  text-transform: uppercase;
+}
+.search-result {
+  margin-top: 1rem;
+}
+.search-empty {
+  margin-top: 3rem;
+  border-top: 1px solid rgba(245, 237, 223, 0.36);
+  border-bottom: 1px solid rgba(245, 237, 223, 0.36);
+  padding: 1.4rem 0;
+}
+.entry-list,
+.link-list {
+  max-width: 70rem;
+  margin-top: 5rem;
+}
+.blog-search + .search-result + .entry-list {
+  margin-top: 1.5rem;
+}
+.blog-search + .entry-list {
+  margin-top: 2rem;
+}
+.entry-list article {
+  display: grid;
+  grid-template-columns: 8rem 1fr auto;
+  align-items: baseline;
+  gap: 1rem;
+  border-top: 1px solid rgba(245, 237, 223, 0.36);
+  padding: 1.4rem 0;
+}
+.entry-list article:last-child {
+  border-bottom: 1px solid rgba(245, 237, 223, 0.36);
+}
+.entry-list p,
+.entry-list a {
+  font:
+    0.68rem "DM Mono",
+    monospace;
+  color: #d4c9b9;
+}
+.entry-list h2 {
+  font:
+    500 clamp(1.2rem, 2.2vw, 1.85rem)/1.1 Fraunces,
+    serif;
+}
+.entry-summary {
+  margin-top: 0.5rem;
+  max-width: 36rem;
+  font-size: 0.9rem;
+  line-height: 1.35;
+  color: #d4c9b9;
+}
+.pagination {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  max-width: 70rem;
+  margin-top: 2rem;
+  border-top: 1px solid rgba(245, 237, 223, 0.36);
+  padding-top: 1.25rem;
+  font:
+    0.68rem "DM Mono",
+    monospace;
+  text-transform: uppercase;
+}
+.pagination a {
+  border-bottom: 1px solid currentColor;
+  padding-bottom: 0.2rem;
+}
+.pagination p {
+  color: #d4c9b9;
+}
+.entry-list a span,
+.link-list b,
+.contact-details span {
+  color: #eb7253;
+}
+.photo-grid {
+  max-width: 70rem;
+  margin-top: 4.5rem;
+  display: grid;
+  grid-template-columns: 1.45fr 1fr;
+  gap: 1rem;
+  align-items: start;
+}
+.photo-grid figure {
+  overflow: hidden;
+}
+.photo-grid .photo-three {
+  grid-column: 2;
+}
+.photo-grid img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  filter: saturate(0.72) contrast(1.05);
+  transition: transform 0.5s ease;
+}
+.photo-grid figure:hover img {
+  transform: scale(1.035);
+}
+.photo-grid figcaption {
+  padding-top: 0.6rem;
+  font:
+    0.62rem "DM Mono",
+    monospace;
+  text-transform: uppercase;
+  color: #d4c9b9;
+}
+.photo-empty {
+  margin-top: 4.5rem;
+  border-top: 1px solid rgba(245, 237, 223, 0.36);
+  border-bottom: 1px solid rgba(245, 237, 223, 0.36);
+  padding: 1.4rem 0;
+  font:
+    0.68rem "DM Mono",
+    monospace;
+  color: #d4c9b9;
+  text-transform: uppercase;
+}
+.link-list a {
+  display: grid;
+  grid-template-columns: 4rem 1fr 1.4fr auto;
+  gap: 1rem;
+  align-items: center;
+  padding: 1.35rem 0;
+  border-top: 1px solid rgba(245, 237, 223, 0.36);
+  transition: padding 0.2s ease;
+}
+.link-list a:last-child {
+  border-bottom: 1px solid rgba(245, 237, 223, 0.36);
+}
+.link-list a:hover {
+  padding-left: 0.75rem;
+}
+.link-list span,
+.link-list em {
+  font:
+    0.68rem "DM Mono",
+    monospace;
+  color: #d4c9b9;
+  font-style: normal;
+}
+.link-list strong {
+  font:
+    500 clamp(1.45rem, 2.5vw, 2.15rem) Fraunces,
+    serif;
+}
+.link-list b {
+  font-size: 1.4rem;
+}
+.contact-layout {
+  display: grid;
+  grid-template-columns: 1.2fr 0.8fr;
+  gap: 3rem;
+  align-items: end;
+  min-height: 62vh;
+}
+.contact-layout p {
+  max-width: 22rem;
+  margin-top: 1.4rem;
+  font-size: 1.15rem;
+  line-height: 1.35;
+}
+.contact-details {
+  border-top: 1px solid rgba(245, 237, 223, 0.36);
+  padding-top: 1rem;
+}
+.contact-details a {
+  font:
+    500 clamp(1.15rem, 2vw, 1.65rem) Fraunces,
+    serif;
+}
+.contact-details p {
+  font:
+    0.66rem "DM Mono",
+    monospace;
+  color: #d4c9b9;
+  text-transform: uppercase;
+}
+.post-view {
+  max-width: 72rem;
+}
+.post-view h1 {
+  max-width: 56rem;
+  margin-top: 2rem;
+}
+.back-link {
+  display: inline-block;
+  margin-bottom: 5rem;
+  border-bottom: 1px solid currentColor;
+  padding-bottom: 0.2rem;
+  font:
+    0.68rem "DM Mono",
+    monospace;
+  text-transform: uppercase;
+}
+.back-link span {
+  color: #eb7253;
+}
+.post-summary {
+  max-width: 37rem;
+  margin-top: 2rem;
+  font:
+    500 clamp(1.2rem, 2vw, 1.65rem)/1.3 Fraunces,
+    serif;
+  color: #d4c9b9;
+}
+.post-content {
+  max-width: 42rem;
+  margin-top: 4rem;
+  font-size: 1.08rem;
+  line-height: 1.6;
+}
+.post-content p,
+.post-content ul,
+.post-content ol {
+  margin-top: 1.4rem;
+}
+.post-content ul,
+.post-content ol {
+  padding-left: 1.3rem;
+}
+.post-content a {
+  border-bottom: 1px solid #eb7253;
+}
+@media (max-width: 680px) {
+  .site-header {
+    padding: 1.5rem;
+  }
+  .home-view {
+    min-height: calc(100vh - 4.2rem);
+    padding: 5rem 1.5rem 1.3rem;
+  }
+  .home-intro {
+    margin: 4rem 0 3.5rem;
+  }
+  .inner-view {
+    padding: 4rem 1.5rem;
+  }
+  .entry-list,
+  .link-list,
+  .photo-grid {
+    margin-top: 3.5rem;
+  }
+  .photo-empty {
+    margin-top: 3.5rem;
+  }
+  .entry-list article {
+    grid-template-columns: 1fr;
+    gap: 0.6rem;
+  }
+  .entry-summary {
+    font-size: 0.82rem;
+  }
+  .photo-grid {
+    grid-template-columns: 1fr;
+  }
+  .photo-grid .photo-three {
+    grid-column: auto;
+  }
+  .link-list a {
+    grid-template-columns: 2.4rem 1fr auto;
+  }
+  .link-list em {
+    display: none;
+  }
+  .contact-layout {
+    grid-template-columns: 1fr;
+    min-height: 66vh;
+  }
+  .menu {
+    padding-left: 1.5rem;
+  }
+  .menu button span {
+    width: 2.4rem;
+  }
+  .back-link {
+    margin-bottom: 3.5rem;
+  }
 }
